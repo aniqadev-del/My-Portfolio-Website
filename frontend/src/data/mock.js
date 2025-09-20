@@ -144,7 +144,7 @@ export const testimonials = [
 ];
 
 export const contactInfo = {
-  email: "aniqa@softgemz.co",
+  email: "aniqa@softgemz.com",
   phone: "+971505705352",
   address: "123 Innovation Drive, Tech City, TC 12345",
   socialMedia: {
