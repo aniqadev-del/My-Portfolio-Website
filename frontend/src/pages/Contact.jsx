@@ -36,19 +36,56 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Mock form submission
-    setTimeout(() => {
-      toast.success("Thank you! We'll get back to you within 24 hours.");
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        phone: '',
-        message: '',
-        projectType: ''
-      });
+    // Validate required fields
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.error("Please fill in all required fields");
       setIsSubmitting(false);
-    }, 1000);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${API}/contact`, {
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        phone: formData.phone,
+        projectType: formData.projectType,
+        message: formData.message
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Thank you! We'll get back to you within 24 hours.");
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          phone: '',
+          message: '',
+          projectType: ''
+        });
+      } else {
+        toast.error(response.data.message || "Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 400) {
+        toast.error("Please check your input and try again.");
+      } else {
+        toast.error("Failed to send message. Please try again later.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
