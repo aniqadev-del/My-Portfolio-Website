@@ -144,15 +144,15 @@ export const testimonials = [
 ];
 
 export const contactInfo = {
-  email: "hello@softgemz.com",
-  phone: "+1 (555) 123-4567",
+  email: "aniqa@softgemz.co",
+  phone: "+971505705352",
   address: "123 Innovation Drive, Tech City, TC 12345",
   socialMedia: {
     instagram: "https://www.instagram.com/aniqasoftgemz/",
     linkedin: "https://www.linkedin.com/in/aniqa-ilyas-patel-609a24384/",
     twitter: "https://x.com/AniqaPatel"
   },
-  whatsapp: "+1-555-123-4567"
+  whatsapp: "+971505705352"
 };
 
 export const stats = [
