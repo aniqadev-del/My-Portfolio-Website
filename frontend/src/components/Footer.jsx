@@ -89,7 +89,6 @@ export const Footer = () => {
             <div className="space-y-2 text-gray-300">
               <p>{contactInfo.email}</p>
               <p>{contactInfo.phone}</p>
-              <p className="text-sm">{contactInfo.address}</p>
             </div>
           </div>
         </div>
