@@ -5,8 +5,12 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { Mail, Phone, MapPin, Clock, MessageCircle, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, MessageCircle, Instagram, Linkedin, Twitter, Loader2 } from 'lucide-react';
 import { contactInfo } from '../data/mock';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 export default function Contact() {
   const [formData, setFormData] = useState({
