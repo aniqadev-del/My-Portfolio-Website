@@ -5,10 +5,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import List
+from pydantic import BaseModel, Field, EmailStr, validator
+from typing import List, Optional
 import uuid
 from datetime import datetime
+import re
 
 
 ROOT_DIR = Path(__file__).parent
