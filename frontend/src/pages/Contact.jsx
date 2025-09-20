@@ -250,27 +250,7 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full">
-                    <MapPin className="text-blue-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Visit Us</h3>
-                    <p className="text-gray-600">{contactInfo.address}</p>
-                    <p className="text-sm text-gray-500">By appointment only</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full">
-                    <Clock className="text-blue-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
-                    <p className="text-gray-600">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                    <p className="text-gray-600">Saturday - Sunday: Closed</p>
-                  </div>
-                </div>
+                {/* Visit Us and Business Hours sections removed as requested */}
               </div>
 
               {/* WhatsApp CTA */}
