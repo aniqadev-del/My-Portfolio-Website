@@ -192,4 +192,8 @@ agent_communication:
   - agent: "main"
     message: "Successfully implemented contact form backend with database integration. Form submission works end-to-end. Ready for comprehensive backend testing to validate all API endpoints, error handling, and edge cases."
   - agent: "testing"
+    message: "Backend testing completed successfully with 92% success rate (23/25 tests passed). All core contact form functionality working properly. Database persistence verified."
+  - agent: "main"
+    message: "Contact information updated to aniqa@softgemz.com and +971505705352. Removed Visit Us and Business Hours sections as requested. Ready for comprehensive frontend testing of all pages and functionality."
+  - agent: "testing"
     message: "Backend testing completed successfully. All 3 backend tasks are working correctly with 92% test success rate (23/25 tests passed). Contact form API handles submissions properly, retrieval API works perfectly, and database models are functioning correctly. Only minor email validation issue with consecutive dots, but core functionality is solid. Database persistence verified with 6 test submissions. Backend is production-ready."
