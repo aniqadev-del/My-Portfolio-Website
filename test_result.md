@@ -184,8 +184,12 @@ metadata:
 test_plan:
   current_focus:
     - "Contact Form Integration"
+    - "Form Validation and UX"
+    - "Multi-page Navigation"
+    - "Responsive Design"
+    - "Social Media Integration"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
