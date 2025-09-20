@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
-import { Mail, Phone, MapPin, Clock, MessageCircle, Instagram, Linkedin, Twitter, Loader2 } from 'lucide-react';
+import { Mail, Phone, MessageCircle, Instagram, Linkedin, Twitter, Loader2 } from 'lucide-react';
 import { contactInfo } from '../data/mock';
 import axios from 'axios';
 
