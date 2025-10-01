@@ -9,9 +9,9 @@ import { Mail, Phone, MessageCircle, Instagram, Linkedin, Twitter, Loader2 } fro
 import { contactInfo } from '../data/mock';
 import axios from 'axios';
 
-// CRITICAL FIX: Temporarily hardcoding the live Render URL to bypass environment variable issues on Vercel
-// This URL (https://softgemz-backend.onrender.com) is now the direct target for the API calls.
-const BACKEND_URL = 'https://softgemz-backend.onrender.com';
+// REVERTING FIX: Using environment variable as intended.
+// You MUST configure this variable (REACT_APP_BACKEND_URL) in your Vercel project settings.
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Contact() {
@@ -52,9 +52,16 @@ export default function Contact() {
       setIsSubmitting(false);
       return;
     }
+    
+    // Check if BACKEND_URL is available
+    if (!BACKEND_URL) {
+      console.error('Environment variable REACT_APP_BACKEND_URL is not set.');
+      toast.error("Configuration error: Backend URL is missing.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      // The axios post call now uses the hardcoded live API endpoint.
       const response = await axios.post(`${API}/contact`, {
         name: formData.name,
         email: formData.email,
@@ -84,7 +91,6 @@ export default function Contact() {
       } else if (error.response?.status === 400) {
         toast.error("Please check your input and try again.");
       } else {
-        // Fallback for network issues (like CORS errors if not fully resolved) or other server errors
         toast.error("Failed to send message. Please ensure the backend is running and accessible.");
       }
     } finally {
