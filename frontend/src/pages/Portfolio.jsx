@@ -134,26 +134,36 @@ export default function Portfolio() {
       </section>
 
       {/* Results Summary */}
-      {/*
+      
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
+          {/*
           <h2 className="text-4xl font-bold text-gray-900 mb-8">
             Measurable Results Across All Projects
           </h2>
-          
+          */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
+            
             <div className="p-8 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl">
+              {/*
               <div className="text-4xl font-bold text-blue-600 mb-2">90+%</div>
               <div className="text-gray-700">Reduction in Manual Work</div>
+              */}
             </div>
+            
             <div className="p-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl">
+              {*/
               <div className="text-4xl font-bold text-green-600 mb-2">500+</div>
               <div className="text-gray-700">Hours Saved Monthly</div>
+              */}
             </div>
             <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl">
+              {/*
               <div className="text-4xl font-bold text-orange-600 mb-2">100%</div>
               <div className="text-gray-700">Client Satisfaction Rate</div>
+              */}
             </div>
+      
           </div>
 
           <Button 
@@ -167,7 +177,7 @@ export default function Portfolio() {
           </Button>
         </div>
       </section>
-      /*}
+      
     </div>
   );
 }
