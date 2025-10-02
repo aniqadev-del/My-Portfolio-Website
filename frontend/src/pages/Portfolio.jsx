@@ -134,6 +134,7 @@ export default function Portfolio() {
       </section>
 
       {/* Results Summary */}
+      {/*
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-8">
@@ -166,6 +167,7 @@ export default function Portfolio() {
           </Button>
         </div>
       </section>
+      /*}
     </div>
   );
 }
