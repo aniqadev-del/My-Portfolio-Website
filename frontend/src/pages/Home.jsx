@@ -131,6 +131,8 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
+      
+      {/*  
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
@@ -163,7 +165,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+    */}
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
         <div className="max-w-4xl mx-auto text-center px-4">
