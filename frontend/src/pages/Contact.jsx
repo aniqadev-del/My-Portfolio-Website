@@ -248,19 +248,19 @@ export default function Contact() {
                     <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                   </div>
                 </div>
-
+                {/*
                 <div className="flex items-start space-x-4">
                   <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full">
                     <Phone className="text-blue-600" size={24} />
                   </div>
                   <div>
-                    {/* <h3 className="font-semibold text-gray-900 mb-1">Call Us</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">Call Us</h3>
                     <p className="text-gray-600">{contactInfo.phone}</p>
                     <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM EST</p>
-                    */}
+                    
                   </div>
                 </div>
-
+                */}
                 {/* Visit Us and Business Hours sections removed as requested */}
               </div>
 
