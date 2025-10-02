@@ -55,6 +55,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
+      {/*
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -75,7 +76,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      */}
       {/* Services Preview */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
