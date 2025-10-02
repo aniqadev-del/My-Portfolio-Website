@@ -254,9 +254,10 @@ export default function Contact() {
                     <Phone className="text-blue-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Call Us</h3>
+                    {/* <h3 className="font-semibold text-gray-900 mb-1">Call Us</h3>
                     <p className="text-gray-600">{contactInfo.phone}</p>
                     <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM EST</p>
+                    */}
                   </div>
                 </div>
 
