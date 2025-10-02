@@ -152,7 +152,7 @@ export default function Portfolio() {
             </div>
             
             <div className="p-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl">
-              {*/
+              {/*
               <div className="text-4xl font-bold text-green-600 mb-2">500+</div>
               <div className="text-gray-700">Hours Saved Monthly</div>
               */}
