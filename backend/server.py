@@ -30,6 +30,9 @@ db = client[os.environ['DB_NAME']]
 # ---------------------
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+@app.get("/")
+async def root():
+    return {"message": "Backend is alive!"}
 
 # ---------------------
 # Logging
@@ -147,7 +150,7 @@ app.add_middleware(
 # Keep backend awake thread
 # ---------------------
 def keep_backend_awake():
-    backend_url = os.environ.get("BACKEND_URL") + "/api/"  # Ping an existing route
+    backend_url = os.environ.get("BACKEND_URL")  # just the root now
     while True:
         try:
             response = requests.get(backend_url)
@@ -155,6 +158,8 @@ def keep_backend_awake():
         except Exception as e:
             logger.error(f"[Ping] Failed to ping backend: {e}")
         time.sleep(14 * 60)  # 14 minutes
+
+
 
 threading.Thread(target=keep_backend_awake, daemon=True).start()
 
