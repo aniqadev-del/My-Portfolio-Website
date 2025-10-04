@@ -55,4 +55,107 @@ class ContactSubmissionCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: str = Field(..., min_length=1, max_length=255)
     company: str = Field("", max_length=100)
-    phone: str = Field("", max_len_
+    phone: str = Field("", max_length=20)
+    projectType: str = Field("", max_length=50)
+    message: str = Field(..., min_length=1, max_length=2000)
+
+class ContactResponse(BaseModel):
+    success: bool
+    message: str
+    id: str = None
+
+# ---------------------
+# API Routes
+# ---------------------
+@api_router.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@api_router.post("/status", response_model=StatusCheck)
+async def create_status_check(input: StatusCheckCreate):
+    status_dict = input.dict()
+    status_obj = StatusCheck(**status_dict)
+    _ = await db.status_checks.insert_one(status_obj.dict())
+    return status_obj
+
+@api_router.get("/status", response_model=List[StatusCheck])
+async def get_status_checks():
+    status_checks = await db.status_checks.find().to_list(1000)
+    return [StatusCheck(**status_check) for status_check in status_checks]
+
+@api_router.post("/contact", response_model=ContactResponse)
+async def submit_contact_form(contact_data: ContactSubmissionCreate):
+    try:
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, contact_data.email):
+            return ContactResponse(success=False, message="Please provide a valid email address")
+        
+        contact_submission = ContactSubmission(
+            name=contact_data.name.strip(),
+            email=contact_data.email.strip().lower(),
+            company=contact_data.company.strip(),
+            phone=contact_data.phone.strip(),
+            projectType=contact_data.projectType,
+            message=contact_data.message.strip()
+        )
+        
+        result = await db.contact_submissions.insert_one(contact_submission.dict())
+        
+        if result.inserted_id:
+            logger.info(f"New contact submission from {contact_submission.email}")
+            return ContactResponse(success=True,
+                                   message="Thank you! We'll get back to you within 24 hours.",
+                                   id=contact_submission.id)
+        else:
+            logger.error("Failed to insert contact submission")
+            return ContactResponse(success=False, message="Failed to submit form. Please try again.")
+            
+    except Exception as e:
+        logger.error(f"Error submitting contact form: {str(e)}")
+        return ContactResponse(success=False, message="An error occurred. Please try again later.")
+
+@api_router.get("/contact", response_model=List[ContactSubmission])
+async def get_contact_submissions():
+    try:
+        submissions = await db.contact_submissions.find().sort("createdAt", -1).to_list(1000)
+        return [ContactSubmission(**submission) for submission in submissions]
+    except Exception as e:
+        logger.error(f"Error fetching contact submissions: {str(e)}")
+        return []
+
+# Include router and middleware
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
+
+# ---------------------
+# Keep backend awake thread
+# ---------------------
+def keep_backend_awake():
+    backend_url = os.environ.get("BACKEND_URL", "https://your-render-backend-url.onrender.com/")
+    while True:
+        try:
+            response = requests.get(backend_url)
+            logger.info(f"[Ping] {backend_url} - Status: {response.status_code} at {datetime.utcnow().isoformat()}")
+        except Exception as e:
+            logger.error(f"[Ping] Failed to ping backend: {e}")
+        # Wait 14 minutes
+        time.sleep(14 * 60)
+
+# Start the keep-alive thread
+threading.Thread(target=keep_backend_awake, daemon=True).start()
