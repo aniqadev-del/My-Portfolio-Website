@@ -14,16 +14,7 @@ const iconMap = {
   Brain,
   Shield
 };
-const [ping, setPing] = useState(0);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    console.log(`--- PING: ${new Date().toLocaleTimeString()} ---`);
-    setPing(prev => prev + 1); // simple state increment
-  }, 14 * 60 * 1000); // 14 minutes
-
-  return () => clearInterval(interval);
-}, []);
 
 export default function Home() {
   return (
