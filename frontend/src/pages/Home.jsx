@@ -14,7 +14,19 @@ const iconMap = {
   Brain,
   Shield
 };
+const [ping, setPing] = useState(0);
 
+  useEffect(() => {
+    // 14 minutes in milliseconds: 14 * 60 * 1000 = 840000ms
+    const interval = setInterval(() => {
+      console.log('--- PING: Signaling activity to prevent render sleep. ---');
+      // Incrementing state triggers a re-render
+      setPing(prev => prev + 1);
+    }, 840000);
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array ensures this runs once on mount
 export default function Home() {
   return (
     <div className="min-h-screen">
