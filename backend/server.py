@@ -147,7 +147,8 @@ async def shutdown_db_client():
 # Keep backend awake thread
 # ---------------------
 def keep_backend_awake():
-    backend_url = os.environ.get("BACKEND_URL", "https://your-render-backend-url.onrender.com/")
+    # Ensure this points to an existing route that returns 200
+    backend_url = os.environ.get("BACKEND_URL") + "/api/"
     while True:
         try:
             response = requests.get(backend_url)
