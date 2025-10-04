@@ -16,17 +16,15 @@ const iconMap = {
 };
 const [ping, setPing] = useState(0);
 
-  useEffect(() => {
-    // 14 minutes in milliseconds: 14 * 60 * 1000 = 840000ms
-    const interval = setInterval(() => {
-      console.log('--- PING: Signaling activity to prevent render sleep. ---');
-      // Incrementing state triggers a re-render
-      setPing(prev => prev + 1);
-    }, 840000);
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log(`--- PING: ${new Date().toLocaleTimeString()} ---`);
+    setPing(prev => prev + 1); // simple state increment
+  }, 14 * 60 * 1000); // 14 minutes
 
-    // Cleanup function to clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this runs once on mount
+  return () => clearInterval(interval);
+}, []);
+
 export default function Home() {
   return (
     <div className="min-h-screen">
