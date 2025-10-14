@@ -4,7 +4,7 @@ export const companyInfo = {
   name: "SoftGemZ",
   tagline: "AI & Automation Solutions",
   description: "At SoftGemZ, we combine AI + Automation to help businesses save time, reduce errors, and work smarter. From automating calibration workflows to building AI-powered dashboards, our mission is to design solutions that give you more time to focus on what matters most.",
-  logo: "https://softgemz.com/frontend/src/data/figmaLogo.png"
+  logo: "https://softgemz.com/figmaLogo.png"
 };
 
 export const services = [
