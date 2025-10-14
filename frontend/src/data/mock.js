@@ -4,7 +4,7 @@ export const companyInfo = {
   name: "SoftGemZ",
   tagline: "AI & Automation Solutions",
   description: "At SoftGemZ, we combine AI + Automation to help businesses save time, reduce errors, and work smarter. From automating calibration workflows to building AI-powered dashboards, our mission is to design solutions that give you more time to focus on what matters most.",
-  logo: "https://customer-assets.emergentagent.com/job_5f6418a6-b95d-48bd-8557-c249c328e302/artifacts/zwg1ymxj_Logo%20Final.png"
+  logo: "https://softgemz.com/frontend/src/data/figmaLogo.png"
 };
 
 export const services = [
