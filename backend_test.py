@@ -1830,5 +1830,5 @@ class AdminSystemTester:
         print("=" * 80)
 
 if __name__ == "__main__":
-    tester = ContactFormTester()
+    tester = AdminSystemTester()
     tester.run_all_tests()
