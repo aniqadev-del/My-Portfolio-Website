@@ -401,6 +401,7 @@ async def admin_update_contact(
             raise HTTPException(status_code=404, detail="Contact not found")
         
         update_fields = {"updatedAt": datetime.utcnow()}
+        email_sent = False
         
         if update_data.status:
             update_fields["status"] = update_data.status
@@ -409,6 +410,22 @@ async def admin_update_contact(
             update_fields["adminResponse"] = update_data.adminResponse
             update_fields["respondedAt"] = datetime.utcnow()
             update_fields["respondedBy"] = current_admin
+            
+            # Send email to user with admin's response
+            try:
+                email_sent = send_admin_response_email(
+                    recipient_email=contact["email"],
+                    recipient_name=contact["name"],
+                    admin_response=update_data.adminResponse,
+                    original_message=contact["message"]
+                )
+                if email_sent:
+                    logger.info(f"Email notification sent to {contact['email']}")
+                else:
+                    logger.warning(f"Failed to send email to {contact['email']}, but response saved to database")
+            except Exception as email_error:
+                logger.error(f"Email sending error: {str(email_error)}")
+                # Continue even if email fails - response is still saved to database
         
         result = await db.contact_submissions.update_one(
             {"id": contact_id},
