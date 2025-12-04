@@ -473,7 +473,7 @@ class AdminSystemTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('message') == 'Hello World':
+                if data.get('message') == 'API is alive!':
                     self.log_result(
                         "API Connectivity Test",
                         True,
@@ -499,6 +499,590 @@ class AdminSystemTester:
                 "API Connectivity Test",
                 False,
                 f"Connection failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    # ==========================================
+    # ADMIN AUTHENTICATION TESTS
+    # ==========================================
+    
+    def test_admin_login_valid_credentials(self):
+        """Test admin login with correct credentials"""
+        login_data = {
+            "username": ADMIN_USERNAME,
+            "password": ADMIN_PASSWORD
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/login", json=login_data, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('access_token') and data.get('token_type') == 'bearer':
+                    self.admin_token = data['access_token']
+                    self.log_result(
+                        "Admin Login - Valid Credentials",
+                        True,
+                        f"Successfully logged in as {data.get('username')}",
+                        {'token_received': True, 'username': data.get('username')}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Login - Valid Credentials",
+                        False,
+                        "Login response missing token or incorrect format",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Login - Valid Credentials",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Login - Valid Credentials",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_login_invalid_username(self):
+        """Test admin login with incorrect username"""
+        login_data = {
+            "username": "wronguser",
+            "password": ADMIN_PASSWORD
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/login", json=login_data, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_result(
+                    "Admin Login - Invalid Username",
+                    True,
+                    "Correctly rejected invalid username",
+                    {'status_code': response.status_code}
+                )
+            else:
+                self.log_result(
+                    "Admin Login - Invalid Username",
+                    False,
+                    f"Expected 401, got HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Login - Invalid Username",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_login_invalid_password(self):
+        """Test admin login with incorrect password"""
+        login_data = {
+            "username": ADMIN_USERNAME,
+            "password": "wrongpassword"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/login", json=login_data, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_result(
+                    "Admin Login - Invalid Password",
+                    True,
+                    "Correctly rejected invalid password",
+                    {'status_code': response.status_code}
+                )
+            else:
+                self.log_result(
+                    "Admin Login - Invalid Password",
+                    False,
+                    f"Expected 401, got HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Login - Invalid Password",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_login_missing_fields(self):
+        """Test admin login with missing fields"""
+        test_cases = [
+            {"username": ADMIN_USERNAME},  # Missing password
+            {"password": ADMIN_PASSWORD},  # Missing username
+            {}  # Missing both
+        ]
+        
+        for i, login_data in enumerate(test_cases):
+            try:
+                response = requests.post(f"{self.api_base}/admin/login", json=login_data, timeout=10)
+                
+                if response.status_code == 422:
+                    self.log_result(
+                        f"Admin Login - Missing Fields Test {i+1}",
+                        True,
+                        "Correctly rejected login with missing fields",
+                        {'status_code': response.status_code, 'test_data': login_data}
+                    )
+                else:
+                    self.log_result(
+                        f"Admin Login - Missing Fields Test {i+1}",
+                        False,
+                        f"Expected 422, got HTTP {response.status_code}: {response.text}",
+                        {'status_code': response.status_code, 'test_data': login_data}
+                    )
+            except Exception as e:
+                self.log_result(
+                    f"Admin Login - Missing Fields Test {i+1}",
+                    False,
+                    f"Request failed: {str(e)}",
+                    {'error': str(e), 'test_data': login_data}
+                )
+
+    # ==========================================
+    # ADMIN CONTACTS MANAGEMENT TESTS
+    # ==========================================
+    
+    def test_admin_contacts_get_all(self):
+        """Test GET /api/admin/contacts - retrieve all contacts"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Get All",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/contacts", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Admin Contacts - Get All",
+                        True,
+                        f"Successfully retrieved {len(data)} contacts",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Get All",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Get All",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Get All",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_filter_by_status(self):
+        """Test GET /api/admin/contacts?status=new - filter by status"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Filter by Status",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/contacts?status=new", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Admin Contacts - Filter by Status",
+                        True,
+                        f"Successfully filtered contacts by status 'new': {len(data)} results",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Filter by Status",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Filter by Status",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Filter by Status",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_search(self):
+        """Test GET /api/admin/contacts?search=test - search functionality"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Search",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/contacts?search=test", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Admin Contacts - Search",
+                        True,
+                        f"Successfully searched contacts for 'test': {len(data)} results",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Search",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Search",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Search",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_update_status(self):
+        """Test PUT /api/admin/contacts/{contact_id} - update contact status"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Update Status",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        # First get a contact to update
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            # Get contacts first
+            response = requests.get(f"{self.api_base}/admin/contacts", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                contacts = response.json()
+                if len(contacts) > 0:
+                    contact_id = contacts[0]['id']
+                    
+                    # Update the contact status
+                    update_data = {"status": "in-progress"}
+                    response = requests.put(
+                        f"{self.api_base}/admin/contacts/{contact_id}", 
+                        json=update_data, 
+                        headers=headers, 
+                        timeout=10
+                    )
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data.get('status') == 'in-progress':
+                            self.log_result(
+                                "Admin Contacts - Update Status",
+                                True,
+                                f"Successfully updated contact {contact_id} status to 'in-progress'",
+                                {'contact_id': contact_id, 'new_status': data.get('status')}
+                            )
+                        else:
+                            self.log_result(
+                                "Admin Contacts - Update Status",
+                                False,
+                                f"Status not updated correctly: {data.get('status')}",
+                                {'response_data': data}
+                            )
+                    else:
+                        self.log_result(
+                            "Admin Contacts - Update Status",
+                            False,
+                            f"HTTP {response.status_code}: {response.text}",
+                            {'status_code': response.status_code}
+                        )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Update Status",
+                        False,
+                        "No contacts available to update",
+                        {'contacts_count': 0}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Update Status",
+                    False,
+                    f"Failed to get contacts: HTTP {response.status_code}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Update Status",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_add_response(self):
+        """Test PUT /api/admin/contacts/{contact_id} - add admin response"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Add Response",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            # Get contacts first
+            response = requests.get(f"{self.api_base}/admin/contacts", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                contacts = response.json()
+                if len(contacts) > 0:
+                    contact_id = contacts[0]['id']
+                    
+                    # Add admin response
+                    update_data = {
+                        "adminResponse": "Thank you for your inquiry. We will review your requirements and get back to you within 2 business days."
+                    }
+                    response = requests.put(
+                        f"{self.api_base}/admin/contacts/{contact_id}", 
+                        json=update_data, 
+                        headers=headers, 
+                        timeout=10
+                    )
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data.get('adminResponse') and data.get('respondedBy'):
+                            self.log_result(
+                                "Admin Contacts - Add Response",
+                                True,
+                                f"Successfully added admin response to contact {contact_id}",
+                                {'contact_id': contact_id, 'responded_by': data.get('respondedBy')}
+                            )
+                        else:
+                            self.log_result(
+                                "Admin Contacts - Add Response",
+                                False,
+                                "Admin response not saved correctly",
+                                {'response_data': data}
+                            )
+                    else:
+                        self.log_result(
+                            "Admin Contacts - Add Response",
+                            False,
+                            f"HTTP {response.status_code}: {response.text}",
+                            {'status_code': response.status_code}
+                        )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Add Response",
+                        False,
+                        "No contacts available to respond to",
+                        {'contacts_count': 0}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Add Response",
+                    False,
+                    f"Failed to get contacts: HTTP {response.status_code}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Add Response",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_export_csv(self):
+        """Test GET /api/admin/contacts/export - export contacts to CSV"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Contacts - Export CSV",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/contacts/export", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '')
+                if 'text/csv' in content_type:
+                    csv_content = response.text
+                    lines = csv_content.split('\n')
+                    self.log_result(
+                        "Admin Contacts - Export CSV",
+                        True,
+                        f"Successfully exported contacts to CSV ({len(lines)} lines)",
+                        {'content_type': content_type, 'lines_count': len(lines)}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Contacts - Export CSV",
+                        False,
+                        f"Expected CSV content, got {content_type}",
+                        {'content_type': content_type}
+                    )
+            else:
+                self.log_result(
+                    "Admin Contacts - Export CSV",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - Export CSV",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_contacts_without_auth(self):
+        """Test admin contacts endpoints without authentication token"""
+        try:
+            response = requests.get(f"{self.api_base}/admin/contacts", timeout=10)
+            
+            if response.status_code == 401:
+                self.log_result(
+                    "Admin Contacts - No Auth Token",
+                    True,
+                    "Correctly rejected request without authentication",
+                    {'status_code': response.status_code}
+                )
+            else:
+                self.log_result(
+                    "Admin Contacts - No Auth Token",
+                    False,
+                    f"Expected 401, got HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Contacts - No Auth Token",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    # ==========================================
+    # ADMIN DASHBOARD STATS TESTS
+    # ==========================================
+    
+    def test_admin_dashboard_stats(self):
+        """Test GET /api/admin/stats - dashboard statistics"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Dashboard Stats",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/stats", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = [
+                    'totalContacts', 'newContacts', 'inProgressContacts', 
+                    'completedContacts', 'totalPortfolioProjects', 'totalServices', 'recentContacts'
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    self.log_result(
+                        "Admin Dashboard Stats",
+                        True,
+                        f"Successfully retrieved dashboard statistics",
+                        {
+                            'total_contacts': data.get('totalContacts'),
+                            'new_contacts': data.get('newContacts'),
+                            'portfolio_projects': data.get('totalPortfolioProjects'),
+                            'services': data.get('totalServices'),
+                            'recent_contacts_count': len(data.get('recentContacts', []))
+                        }
+                    )
+                else:
+                    self.log_result(
+                        "Admin Dashboard Stats",
+                        False,
+                        f"Missing required fields: {missing_fields}",
+                        {'missing_fields': missing_fields, 'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Dashboard Stats",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Dashboard Stats",
+                False,
+                f"Request failed: {str(e)}",
                 {'error': str(e)}
             )
 
