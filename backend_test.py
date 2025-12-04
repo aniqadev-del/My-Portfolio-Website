@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Suite for SoftGemZ Contact Form API
-Tests the contact form submission and retrieval endpoints
+Comprehensive Backend Testing Suite for SoftGemZ Admin Control System
+Tests all backend APIs including contact form, admin authentication, and admin management endpoints
 """
 
 import requests
@@ -17,6 +17,10 @@ load_dotenv('/app/frontend/.env')
 # Get backend URL from frontend environment
 BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://control-center-34.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
+
+# Admin credentials for testing
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
 
 class ContactFormTester:
     def __init__(self):
