@@ -182,15 +182,18 @@ backend:
 
   - task: "Admin Dashboard Statistics API"
     implemented: true
-    working: "NA"
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created GET /api/admin/stats endpoint that returns dashboard statistics: total contacts, contacts by status (new, in-progress, completed), total portfolio projects, total services, and recent contacts list."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Admin dashboard stats API failing with HTTP 500 'Failed to fetch statistics' due to MongoDB Atlas authentication failure (error code 8000). Cannot retrieve contact counts, portfolio projects count, or services count. All database operations blocked by invalid credentials."
 
   - task: "Admin Portfolio Management APIs"
     implemented: true
