@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build a professional website for SoftGemZ software house showcasing AI & Automation solutions with functional contact form and database integration"
+user_problem_statement: "Build a professional website for SoftGemZ software house showcasing AI & Automation solutions with functional contact form and database integration. ADDED: Build admin control system to view/respond to messages, manage portfolio projects and services, with dashboard, statistics, and export features."
 
 backend:
   - task: "Contact Form API Endpoint"
