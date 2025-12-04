@@ -100,6 +100,67 @@ class ContactResponse(BaseModel):
     message: str
     id: str = None
 
+# Admin Models
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+class AdminToken(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    username: str
+
+class AdminContactUpdate(BaseModel):
+    status: Optional[str] = None
+    adminResponse: Optional[str] = None
+
+class Portfolio(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    category: str
+    image: str
+    technologies: List[str] = []
+    challenge: str = ""
+    solution: str = ""
+    results: str = ""
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class PortfolioCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str = Field(..., min_length=1, max_length=1000)
+    category: str = Field(..., min_length=1, max_length=100)
+    image: str = ""
+    technologies: List[str] = []
+    challenge: str = Field("", max_length=1000)
+    solution: str = Field("", max_length=1000)
+    results: str = Field("", max_length=500)
+
+class Service(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    icon: str = ""
+    features: List[str] = []
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class ServiceCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
+    description: str = Field(..., min_length=1, max_length=1000)
+    icon: str = ""
+    features: List[str] = []
+
+class DashboardStats(BaseModel):
+    totalContacts: int
+    newContacts: int
+    inProgressContacts: int
+    completedContacts: int
+    totalPortfolioProjects: int
+    totalServices: int
+    recentContacts: List[ContactSubmission]
+
 # ---------------------
 # API Routes
 # ---------------------
