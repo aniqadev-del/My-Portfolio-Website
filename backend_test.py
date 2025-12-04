@@ -1086,10 +1086,651 @@ class AdminSystemTester:
                 {'error': str(e)}
             )
 
+    # ==========================================
+    # ADMIN PORTFOLIO MANAGEMENT TESTS
+    # ==========================================
+    
+    def test_admin_portfolio_get_all(self):
+        """Test GET /api/admin/portfolio - get all projects"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Portfolio - Get All",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/portfolio", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Admin Portfolio - Get All",
+                        True,
+                        f"Successfully retrieved {len(data)} portfolio projects",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Portfolio - Get All",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Portfolio - Get All",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Portfolio - Get All",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_portfolio_create(self):
+        """Test POST /api/admin/portfolio - create new project"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Portfolio - Create Project",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        project_data = {
+            "title": "AI-Powered Customer Service Bot",
+            "description": "Intelligent chatbot system that handles customer inquiries with natural language processing",
+            "category": "AI Development",
+            "image": "https://example.com/chatbot-image.jpg",
+            "technologies": ["Python", "TensorFlow", "FastAPI", "React"],
+            "challenge": "Client needed 24/7 customer support without increasing staff costs",
+            "solution": "Developed an AI chatbot that handles 80% of customer inquiries automatically",
+            "results": "Reduced response time by 90% and customer service costs by 60%"
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/portfolio", json=project_data, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('id') and data.get('title') == project_data['title']:
+                    self.created_portfolio_ids.append(data['id'])
+                    self.log_result(
+                        "Admin Portfolio - Create Project",
+                        True,
+                        f"Successfully created portfolio project: {data['title']}",
+                        {'project_id': data['id'], 'title': data['title']}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Portfolio - Create Project",
+                        False,
+                        "Project creation response missing required fields",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Portfolio - Create Project",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Portfolio - Create Project",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_portfolio_update(self):
+        """Test PUT /api/admin/portfolio/{project_id} - update project"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Portfolio - Update Project",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        if not self.created_portfolio_ids:
+            self.log_result(
+                "Admin Portfolio - Update Project",
+                False,
+                "No portfolio projects available to update",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        project_id = self.created_portfolio_ids[0]
+        
+        update_data = {
+            "title": "Advanced AI Customer Service Bot",
+            "description": "Enhanced intelligent chatbot system with multilingual support",
+            "category": "AI Development",
+            "image": "https://example.com/enhanced-chatbot.jpg",
+            "technologies": ["Python", "TensorFlow", "FastAPI", "React", "MongoDB"],
+            "challenge": "Client needed multilingual 24/7 customer support",
+            "solution": "Developed an enhanced AI chatbot with multilingual capabilities",
+            "results": "Reduced response time by 95% and expanded to 5 languages"
+        }
+        
+        try:
+            response = requests.put(f"{self.api_base}/admin/portfolio/{project_id}", json=update_data, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('title') == update_data['title']:
+                    self.log_result(
+                        "Admin Portfolio - Update Project",
+                        True,
+                        f"Successfully updated portfolio project: {data['title']}",
+                        {'project_id': project_id, 'new_title': data['title']}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Portfolio - Update Project",
+                        False,
+                        "Project update did not reflect changes",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Portfolio - Update Project",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Portfolio - Update Project",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_portfolio_delete(self):
+        """Test DELETE /api/admin/portfolio/{project_id} - delete project"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Portfolio - Delete Project",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        if not self.created_portfolio_ids:
+            self.log_result(
+                "Admin Portfolio - Delete Project",
+                False,
+                "No portfolio projects available to delete",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        project_id = self.created_portfolio_ids[0]
+        
+        try:
+            response = requests.delete(f"{self.api_base}/admin/portfolio/{project_id}", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result(
+                        "Admin Portfolio - Delete Project",
+                        True,
+                        f"Successfully deleted portfolio project: {project_id}",
+                        {'project_id': project_id, 'message': data.get('message')}
+                    )
+                    self.created_portfolio_ids.remove(project_id)
+                else:
+                    self.log_result(
+                        "Admin Portfolio - Delete Project",
+                        False,
+                        "Delete response indicates failure",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Portfolio - Delete Project",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Portfolio - Delete Project",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_portfolio_validation(self):
+        """Test portfolio creation with missing required fields"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Portfolio - Validation",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test with missing required fields
+        invalid_data = {
+            "description": "Test description"
+            # Missing title, category
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/portfolio", json=invalid_data, headers=headers, timeout=10)
+            
+            if response.status_code == 422:
+                self.log_result(
+                    "Admin Portfolio - Validation",
+                    True,
+                    "Correctly rejected portfolio creation with missing required fields",
+                    {'status_code': response.status_code}
+                )
+            else:
+                self.log_result(
+                    "Admin Portfolio - Validation",
+                    False,
+                    f"Expected 422, got HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Portfolio - Validation",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    # ==========================================
+    # ADMIN SERVICES MANAGEMENT TESTS
+    # ==========================================
+    
+    def test_admin_services_get_all(self):
+        """Test GET /api/admin/services - get all services"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Services - Get All",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = requests.get(f"{self.api_base}/admin/services", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Admin Services - Get All",
+                        True,
+                        f"Successfully retrieved {len(data)} services",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Services - Get All",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Services - Get All",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Services - Get All",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_services_create(self):
+        """Test POST /api/admin/services - create new service"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Services - Create Service",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        service_data = {
+            "title": "AI-Powered Data Analytics",
+            "description": "Transform your raw data into actionable insights with our advanced AI analytics platform",
+            "icon": "📊",
+            "features": [
+                "Real-time data processing",
+                "Predictive analytics",
+                "Custom dashboard creation",
+                "Automated reporting",
+                "Machine learning insights"
+            ]
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/services", json=service_data, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('id') and data.get('title') == service_data['title']:
+                    self.created_service_ids.append(data['id'])
+                    self.log_result(
+                        "Admin Services - Create Service",
+                        True,
+                        f"Successfully created service: {data['title']}",
+                        {'service_id': data['id'], 'title': data['title']}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Services - Create Service",
+                        False,
+                        "Service creation response missing required fields",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Services - Create Service",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Services - Create Service",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_services_update(self):
+        """Test PUT /api/admin/services/{service_id} - update service"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Services - Update Service",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        if not self.created_service_ids:
+            self.log_result(
+                "Admin Services - Update Service",
+                False,
+                "No services available to update",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        service_id = self.created_service_ids[0]
+        
+        update_data = {
+            "title": "Advanced AI Data Analytics & Insights",
+            "description": "Enhanced AI analytics platform with real-time processing and advanced machine learning capabilities",
+            "icon": "🤖",
+            "features": [
+                "Real-time data processing",
+                "Advanced predictive analytics",
+                "Custom dashboard creation",
+                "Automated reporting",
+                "Deep learning insights",
+                "Natural language queries"
+            ]
+        }
+        
+        try:
+            response = requests.put(f"{self.api_base}/admin/services/{service_id}", json=update_data, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('title') == update_data['title']:
+                    self.log_result(
+                        "Admin Services - Update Service",
+                        True,
+                        f"Successfully updated service: {data['title']}",
+                        {'service_id': service_id, 'new_title': data['title']}
+                    )
+                else:
+                    self.log_result(
+                        "Admin Services - Update Service",
+                        False,
+                        "Service update did not reflect changes",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Services - Update Service",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Services - Update Service",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_services_delete(self):
+        """Test DELETE /api/admin/services/{service_id} - delete service"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Services - Delete Service",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        if not self.created_service_ids:
+            self.log_result(
+                "Admin Services - Delete Service",
+                False,
+                "No services available to delete",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        service_id = self.created_service_ids[0]
+        
+        try:
+            response = requests.delete(f"{self.api_base}/admin/services/{service_id}", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result(
+                        "Admin Services - Delete Service",
+                        True,
+                        f"Successfully deleted service: {service_id}",
+                        {'service_id': service_id, 'message': data.get('message')}
+                    )
+                    self.created_service_ids.remove(service_id)
+                else:
+                    self.log_result(
+                        "Admin Services - Delete Service",
+                        False,
+                        "Delete response indicates failure",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Admin Services - Delete Service",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Services - Delete Service",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_admin_services_validation(self):
+        """Test service creation with missing required fields"""
+        if not self.admin_token:
+            self.log_result(
+                "Admin Services - Validation",
+                False,
+                "No admin token available for authentication",
+                {}
+            )
+            return
+            
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test with missing required fields
+        invalid_data = {
+            "icon": "🔧"
+            # Missing title, description
+        }
+        
+        try:
+            response = requests.post(f"{self.api_base}/admin/services", json=invalid_data, headers=headers, timeout=10)
+            
+            if response.status_code == 422:
+                self.log_result(
+                    "Admin Services - Validation",
+                    True,
+                    "Correctly rejected service creation with missing required fields",
+                    {'status_code': response.status_code}
+                )
+            else:
+                self.log_result(
+                    "Admin Services - Validation",
+                    False,
+                    f"Expected 422, got HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Admin Services - Validation",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    # ==========================================
+    # PUBLIC ENDPOINTS TESTS
+    # ==========================================
+    
+    def test_public_portfolio_endpoint(self):
+        """Test GET /api/portfolio - public portfolio endpoint"""
+        try:
+            response = requests.get(f"{self.api_base}/portfolio", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Public Portfolio Endpoint",
+                        True,
+                        f"Successfully retrieved {len(data)} portfolio projects from public endpoint",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Public Portfolio Endpoint",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Public Portfolio Endpoint",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Public Portfolio Endpoint",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
+    def test_public_services_endpoint(self):
+        """Test GET /api/services - public services endpoint"""
+        try:
+            response = requests.get(f"{self.api_base}/services", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_result(
+                        "Public Services Endpoint",
+                        True,
+                        f"Successfully retrieved {len(data)} services from public endpoint",
+                        {'count': len(data), 'status_code': response.status_code}
+                    )
+                else:
+                    self.log_result(
+                        "Public Services Endpoint",
+                        False,
+                        f"Expected list, got {type(data)}",
+                        {'response_data': data}
+                    )
+            else:
+                self.log_result(
+                    "Public Services Endpoint",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    {'status_code': response.status_code}
+                )
+        except Exception as e:
+            self.log_result(
+                "Public Services Endpoint",
+                False,
+                f"Request failed: {str(e)}",
+                {'error': str(e)}
+            )
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 80)
-        print("SOFTGEMZ BACKEND TESTING SUITE")
+        print("SOFTGEMZ COMPREHENSIVE BACKEND TESTING SUITE")
         print("=" * 80)
         print(f"Testing API at: {self.api_base}")
         print(f"Started at: {datetime.now().isoformat()}")
@@ -1099,7 +1740,50 @@ class AdminSystemTester:
         # Test API connectivity first
         self.test_api_connectivity()
         
-        # Test contact form submission
+        # Test admin authentication
+        print("\n🔐 TESTING ADMIN AUTHENTICATION...")
+        self.test_admin_login_valid_credentials()
+        self.test_admin_login_invalid_username()
+        self.test_admin_login_invalid_password()
+        self.test_admin_login_missing_fields()
+        
+        # Test admin contacts management
+        print("\n📧 TESTING ADMIN CONTACTS MANAGEMENT...")
+        self.test_admin_contacts_get_all()
+        self.test_admin_contacts_filter_by_status()
+        self.test_admin_contacts_search()
+        self.test_admin_contacts_update_status()
+        self.test_admin_contacts_add_response()
+        self.test_admin_contacts_export_csv()
+        self.test_admin_contacts_without_auth()
+        
+        # Test admin dashboard stats
+        print("\n📊 TESTING ADMIN DASHBOARD STATS...")
+        self.test_admin_dashboard_stats()
+        
+        # Test admin portfolio management
+        print("\n💼 TESTING ADMIN PORTFOLIO MANAGEMENT...")
+        self.test_admin_portfolio_get_all()
+        self.test_admin_portfolio_create()
+        self.test_admin_portfolio_update()
+        self.test_admin_portfolio_validation()
+        self.test_admin_portfolio_delete()
+        
+        # Test admin services management
+        print("\n🛠️ TESTING ADMIN SERVICES MANAGEMENT...")
+        self.test_admin_services_get_all()
+        self.test_admin_services_create()
+        self.test_admin_services_update()
+        self.test_admin_services_validation()
+        self.test_admin_services_delete()
+        
+        # Test public endpoints
+        print("\n🌐 TESTING PUBLIC ENDPOINTS...")
+        self.test_public_portfolio_endpoint()
+        self.test_public_services_endpoint()
+        
+        # Test contact form (existing functionality)
+        print("\n📝 TESTING CONTACT FORM (EXISTING FUNCTIONALITY)...")
         self.test_valid_contact_submission()
         self.test_required_fields_only()
         self.test_missing_required_fields()
@@ -1107,8 +1791,6 @@ class AdminSystemTester:
         self.test_field_length_limits()
         self.test_special_characters()
         self.test_malformed_requests()
-        
-        # Test contact retrieval
         self.test_contact_retrieval()
         
         # Summary
