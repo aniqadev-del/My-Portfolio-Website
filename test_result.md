@@ -197,15 +197,18 @@ backend:
 
   - task: "Admin Portfolio Management APIs"
     implemented: true
-    working: "NA"
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created full CRUD operations for portfolio: GET /api/admin/portfolio, POST /api/admin/portfolio, PUT /api/admin/portfolio/:id, DELETE /api/admin/portfolio/:id. Added Portfolio and PortfolioCreate models with fields for title, description, category, image, technologies, challenge, solution, and results."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: All admin portfolio management APIs failing with HTTP 500 errors due to MongoDB Atlas authentication failure. GET /api/admin/portfolio returns 'Failed to fetch portfolio projects', POST returns 'Internal server error'. Validation works correctly (422 for missing required fields). Database operations blocked by invalid credentials."
 
   - task: "Admin Services Management APIs"
     implemented: true
