@@ -212,15 +212,18 @@ backend:
 
   - task: "Admin Services Management APIs"
     implemented: true
-    working: "NA"
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created full CRUD operations for services: GET /api/admin/services, POST /api/admin/services, PUT /api/admin/services/:id, DELETE /api/admin/services/:id. Added Service and ServiceCreate models with fields for title, description, icon, and features array."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: All admin services management APIs failing with HTTP 500 errors due to MongoDB Atlas authentication failure. GET /api/admin/services returns 'Failed to fetch services', POST returns 'Internal server error'. Validation works correctly (422 for missing required fields). Database operations blocked by invalid credentials."
 
   - task: "Public Portfolio & Services APIs"
     implemented: true
