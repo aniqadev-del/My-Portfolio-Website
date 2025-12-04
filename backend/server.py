@@ -80,7 +80,10 @@ class ContactSubmission(BaseModel):
     phone: str = ""
     projectType: str = ""
     message: str
-    status: str = "new"
+    status: str = "new"  # new, in-progress, completed
+    adminResponse: str = ""
+    respondedAt: Optional[datetime] = None
+    respondedBy: str = ""
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
