@@ -22,11 +22,14 @@ API_BASE = f"{BACKEND_URL}/api"
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
 
-class ContactFormTester:
+class AdminSystemTester:
     def __init__(self):
         self.api_base = API_BASE
         self.test_results = []
         self.submitted_ids = []
+        self.admin_token = None
+        self.created_portfolio_ids = []
+        self.created_service_ids = []
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
