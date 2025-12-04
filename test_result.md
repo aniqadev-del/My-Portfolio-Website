@@ -441,12 +441,7 @@ test_plan:
     - "Admin Portfolio Management Interface"
     - "Admin Services Management Interface"
     - "Admin Routes & Protected Navigation"
-  stuck_tasks:
-    - "Admin Contact Management APIs"
-    - "Admin Dashboard Statistics API"
-    - "Admin Portfolio Management APIs"
-    - "Admin Services Management APIs"
-    - "Contact Form API Endpoint"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
