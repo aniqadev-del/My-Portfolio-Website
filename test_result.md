@@ -167,15 +167,18 @@ backend:
 
   - task: "Admin Contact Management APIs"
     implemented: true
-    working: "NA"
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created protected admin endpoints: GET /api/admin/contacts (with filtering/search), PUT /api/admin/contacts/:id (update status and admin response), GET /api/admin/contacts/export (CSV export). Enhanced ContactSubmission model with status, adminResponse, respondedAt, and respondedBy fields."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: All admin contact management APIs failing with HTTP 500 'Failed to fetch contacts' due to MongoDB Atlas authentication failure (error code 8000: 'bad auth : authentication failed'). Database credentials aniqa_db_user:2yGZWqt4QYaPePAd are invalid. Authentication middleware works correctly (returns 403 without token), but all database operations fail. Requires MongoDB Atlas credential reset."
 
   - task: "Admin Dashboard Statistics API"
     implemented: true
