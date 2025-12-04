@@ -452,13 +452,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Admin Authentication Context & Login"
-    - "Admin Dashboard with Statistics"
-    - "Admin Contacts Management Interface"
-    - "Admin Portfolio Management Interface"
-    - "Admin Services Management Interface"
-    - "Admin Routes & Protected Navigation"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
