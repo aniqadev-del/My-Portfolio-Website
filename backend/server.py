@@ -173,6 +173,85 @@ class DashboardStats(BaseModel):
     recentContacts: List[ContactSubmission]
 
 # ---------------------
+# Email Helper Functions
+# ---------------------
+def send_admin_response_email(recipient_email: str, recipient_name: str, admin_response: str, original_message: str):
+    """Send email to user with admin's response"""
+    try:
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"Response from {SMTP_FROM_NAME}"
+        msg['From'] = f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
+        msg['To'] = recipient_email
+
+        # Create HTML email body
+        html_body = f"""
+        <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+                    .response-box {{ background: white; padding: 20px; border-left: 4px solid #667eea; margin: 20px 0; border-radius: 5px; }}
+                    .original-message {{ background: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; }}
+                    .footer {{ text-align: center; color: #666; font-size: 12px; margin-top: 30px; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Thank you for contacting us!</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hi {recipient_name},</p>
+                        
+                        <p>Thank you for reaching out to SoftGemZ. We've reviewed your inquiry and here's our response:</p>
+                        
+                        <div class="response-box">
+                            <strong>Our Response:</strong>
+                            <p>{admin_response}</p>
+                        </div>
+                        
+                        <div class="original-message">
+                            <strong>Your Original Message:</strong>
+                            <p>{original_message}</p>
+                        </div>
+                        
+                        <p>If you have any further questions, please don't hesitate to reach out to us.</p>
+                        
+                        <p>Best regards,<br>
+                        <strong>SoftGemZ Team</strong><br>
+                        <a href="https://softgemz.com">softgemz.com</a></p>
+                        
+                        <div class="footer">
+                            <p>This email was sent from SoftGemZ Admin Panel</p>
+                            <p>© 2025 SoftGemZ. All rights reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+
+        # Attach HTML body
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(html_part)
+
+        # Connect to SMTP server and send
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        logger.info(f"Email sent successfully to {recipient_email}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send email to {recipient_email}: {str(e)}")
+        return False
+
+# ---------------------
 # Authentication Helpers
 # ---------------------
 def verify_password(plain_password, hashed_password):
