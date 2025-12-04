@@ -392,10 +392,22 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Admin Authentication System"
+    - "Admin Contact Management APIs"
+    - "Admin Dashboard Statistics API"
+    - "Admin Portfolio Management APIs"
+    - "Admin Services Management APIs"
+    - "Public Portfolio & Services APIs"
+    - "Admin Authentication Context & Login"
+    - "Admin Dashboard with Statistics"
+    - "Admin Contacts Management Interface"
+    - "Admin Portfolio Management Interface"
+    - "Admin Services Management Interface"
+    - "Admin Routes & Protected Navigation"
   stuck_tasks: []
   test_all: false
-  test_priority: "completed"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
