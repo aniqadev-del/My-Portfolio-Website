@@ -245,6 +245,352 @@ async def get_contact_submissions():
         logger.error(f"Error fetching contact submissions: {str(e)}")
         return []
 
+# ---------------------
+# Admin Authentication Routes
+# ---------------------
+@api_router.post("/admin/login", response_model=AdminToken)
+async def admin_login(credentials: AdminLogin):
+    try:
+        if credentials.username != ADMIN_USERNAME:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        if not verify_password(credentials.password, ADMIN_PASSWORD_HASH):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        access_token = create_access_token(data={"sub": credentials.username})
+        logger.info(f"Admin {credentials.username} logged in successfully")
+        
+        return AdminToken(
+            access_token=access_token,
+            token_type="bearer",
+            username=credentials.username
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error during admin login: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ---------------------
+# Admin Contact Management Routes
+# ---------------------
+@api_router.get("/admin/contacts", response_model=List[ContactSubmission])
+async def admin_get_contacts(
+    status: Optional[str] = None,
+    search: Optional[str] = None,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        query = {}
+        if status and status != "all":
+            query["status"] = status
+        
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}},
+                {"company": {"$regex": search, "$options": "i"}},
+                {"message": {"$regex": search, "$options": "i"}}
+            ]
+        
+        contacts = await db.contact_submissions.find(query).sort("createdAt", -1).to_list(1000)
+        return [ContactSubmission(**c) for c in contacts]
+    except Exception as e:
+        logger.error(f"Error fetching contacts: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch contacts")
+
+@api_router.put("/admin/contacts/{contact_id}")
+async def admin_update_contact(
+    contact_id: str,
+    update_data: AdminContactUpdate,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        contact = await db.contact_submissions.find_one({"id": contact_id})
+        if not contact:
+            raise HTTPException(status_code=404, detail="Contact not found")
+        
+        update_fields = {"updatedAt": datetime.utcnow()}
+        
+        if update_data.status:
+            update_fields["status"] = update_data.status
+        
+        if update_data.adminResponse:
+            update_fields["adminResponse"] = update_data.adminResponse
+            update_fields["respondedAt"] = datetime.utcnow()
+            update_fields["respondedBy"] = current_admin
+        
+        result = await db.contact_submissions.update_one(
+            {"id": contact_id},
+            {"$set": update_fields}
+        )
+        
+        if result.modified_count > 0:
+            updated_contact = await db.contact_submissions.find_one({"id": contact_id})
+            logger.info(f"Admin {current_admin} updated contact {contact_id}")
+            return ContactSubmission(**updated_contact)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update contact")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error updating contact: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.get("/admin/contacts/export")
+async def admin_export_contacts(current_admin: str = Depends(get_current_admin)):
+    try:
+        contacts = await db.contact_submissions.find().sort("createdAt", -1).to_list(10000)
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow([
+            "ID", "Name", "Email", "Company", "Phone", "Project Type", 
+            "Message", "Status", "Admin Response", "Created At", 
+            "Responded At", "Responded By"
+        ])
+        
+        # Write data
+        for contact in contacts:
+            writer.writerow([
+                contact.get("id", ""),
+                contact.get("name", ""),
+                contact.get("email", ""),
+                contact.get("company", ""),
+                contact.get("phone", ""),
+                contact.get("projectType", ""),
+                contact.get("message", ""),
+                contact.get("status", ""),
+                contact.get("adminResponse", ""),
+                contact.get("createdAt", ""),
+                contact.get("respondedAt", ""),
+                contact.get("respondedBy", "")
+            ])
+        
+        output.seek(0)
+        logger.info(f"Admin {current_admin} exported {len(contacts)} contacts")
+        
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=contacts_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"}
+        )
+    except Exception as e:
+        logger.error(f"Error exporting contacts: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to export contacts")
+
+# ---------------------
+# Admin Dashboard Stats Route
+# ---------------------
+@api_router.get("/admin/stats", response_model=DashboardStats)
+async def admin_get_stats(current_admin: str = Depends(get_current_admin)):
+    try:
+        all_contacts = await db.contact_submissions.find().to_list(10000)
+        total_contacts = len(all_contacts)
+        new_contacts = len([c for c in all_contacts if c.get("status") == "new"])
+        in_progress = len([c for c in all_contacts if c.get("status") == "in-progress"])
+        completed = len([c for c in all_contacts if c.get("status") == "completed"])
+        
+        portfolio_count = await db.portfolio_projects.count_documents({})
+        services_count = await db.services.count_documents({})
+        
+        recent_contacts = await db.contact_submissions.find().sort("createdAt", -1).limit(5).to_list(5)
+        
+        return DashboardStats(
+            totalContacts=total_contacts,
+            newContacts=new_contacts,
+            inProgressContacts=in_progress,
+            completedContacts=completed,
+            totalPortfolioProjects=portfolio_count,
+            totalServices=services_count,
+            recentContacts=[ContactSubmission(**c) for c in recent_contacts]
+        )
+    except Exception as e:
+        logger.error(f"Error fetching dashboard stats: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch statistics")
+
+# ---------------------
+# Admin Portfolio Management Routes
+# ---------------------
+@api_router.get("/admin/portfolio", response_model=List[Portfolio])
+async def admin_get_portfolio(current_admin: str = Depends(get_current_admin)):
+    try:
+        projects = await db.portfolio_projects.find().sort("createdAt", -1).to_list(1000)
+        return [Portfolio(**p) for p in projects]
+    except Exception as e:
+        logger.error(f"Error fetching portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch portfolio projects")
+
+@api_router.post("/admin/portfolio", response_model=Portfolio)
+async def admin_create_portfolio(
+    project_data: PortfolioCreate,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        project = Portfolio(**project_data.dict())
+        result = await db.portfolio_projects.insert_one(project.dict())
+        if result.inserted_id:
+            logger.info(f"Admin {current_admin} created portfolio project {project.id}")
+            return project
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create project")
+    except Exception as e:
+        logger.error(f"Error creating portfolio project: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.put("/admin/portfolio/{project_id}", response_model=Portfolio)
+async def admin_update_portfolio(
+    project_id: str,
+    project_data: PortfolioCreate,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        project = await db.portfolio_projects.find_one({"id": project_id})
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        update_fields = project_data.dict()
+        update_fields["updatedAt"] = datetime.utcnow()
+        
+        result = await db.portfolio_projects.update_one(
+            {"id": project_id},
+            {"$set": update_fields}
+        )
+        
+        if result.modified_count > 0:
+            updated_project = await db.portfolio_projects.find_one({"id": project_id})
+            logger.info(f"Admin {current_admin} updated portfolio project {project_id}")
+            return Portfolio(**updated_project)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update project")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error updating portfolio project: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.delete("/admin/portfolio/{project_id}")
+async def admin_delete_portfolio(
+    project_id: str,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        result = await db.portfolio_projects.delete_one({"id": project_id})
+        if result.deleted_count > 0:
+            logger.info(f"Admin {current_admin} deleted portfolio project {project_id}")
+            return {"success": True, "message": "Project deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Project not found")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error deleting portfolio project: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ---------------------
+# Admin Services Management Routes
+# ---------------------
+@api_router.get("/admin/services", response_model=List[Service])
+async def admin_get_services(current_admin: str = Depends(get_current_admin)):
+    try:
+        services = await db.services.find().sort("createdAt", -1).to_list(1000)
+        return [Service(**s) for s in services]
+    except Exception as e:
+        logger.error(f"Error fetching services: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch services")
+
+@api_router.post("/admin/services", response_model=Service)
+async def admin_create_service(
+    service_data: ServiceCreate,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        service = Service(**service_data.dict())
+        result = await db.services.insert_one(service.dict())
+        if result.inserted_id:
+            logger.info(f"Admin {current_admin} created service {service.id}")
+            return service
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create service")
+    except Exception as e:
+        logger.error(f"Error creating service: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.put("/admin/services/{service_id}", response_model=Service)
+async def admin_update_service(
+    service_id: str,
+    service_data: ServiceCreate,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        service = await db.services.find_one({"id": service_id})
+        if not service:
+            raise HTTPException(status_code=404, detail="Service not found")
+        
+        update_fields = service_data.dict()
+        update_fields["updatedAt"] = datetime.utcnow()
+        
+        result = await db.services.update_one(
+            {"id": service_id},
+            {"$set": update_fields}
+        )
+        
+        if result.modified_count > 0:
+            updated_service = await db.services.find_one({"id": service_id})
+            logger.info(f"Admin {current_admin} updated service {service_id}")
+            return Service(**updated_service)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update service")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error updating service: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.delete("/admin/services/{service_id}")
+async def admin_delete_service(
+    service_id: str,
+    current_admin: str = Depends(get_current_admin)
+):
+    try:
+        result = await db.services.delete_one({"id": service_id})
+        if result.deleted_count > 0:
+            logger.info(f"Admin {current_admin} deleted service {service_id}")
+            return {"success": True, "message": "Service deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Service not found")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error deleting service: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ---------------------
+# Public Portfolio Route (for frontend to fetch)
+# ---------------------
+@api_router.get("/portfolio", response_model=List[Portfolio])
+async def get_portfolio():
+    try:
+        projects = await db.portfolio_projects.find().sort("createdAt", -1).to_list(1000)
+        return [Portfolio(**p) for p in projects]
+    except Exception as e:
+        logger.error(f"Error fetching portfolio: {str(e)}")
+        return []
+
+# ---------------------
+# Public Services Route (for frontend to fetch)
+# ---------------------
+@api_router.get("/services", response_model=List[Service])
+async def get_services():
+    try:
+        services = await db.services.find().sort("createdAt", -1).to_list(1000)
+        return [Service(**s) for s in services]
+    except Exception as e:
+        logger.error(f"Error fetching services: {str(e)}")
+        return []
+
 # Include router
 app.include_router(api_router)
 
