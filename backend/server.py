@@ -19,6 +19,9 @@ from passlib.context import CryptContext
 import csv
 import io
 from fastapi.responses import StreamingResponse
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # ---------------------
 # Load environment variables
