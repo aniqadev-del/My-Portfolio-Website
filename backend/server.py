@@ -47,6 +47,21 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 # ---------------------
+# Security Configuration
+# ---------------------
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 480  # 8 hours
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
+
+# Predefined admin credentials - Change these in production
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")  # Hash this in production
+ADMIN_PASSWORD_HASH = pwd_context.hash(ADMIN_PASSWORD)
+
+# ---------------------
 # Models
 # ---------------------
 class StatusCheck(BaseModel):
