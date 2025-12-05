@@ -11,7 +11,9 @@ import {
   LayoutDashboard,
   MessageSquare,
   Settings,
-  X
+  X,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 
