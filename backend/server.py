@@ -372,6 +372,59 @@ async def admin_login(credentials: AdminLogin):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # ---------------------
+# Admin Image Upload Route
+# ---------------------
+@api_router.post("/admin/upload-image")
+async def upload_image(
+    file: UploadFile = File(...),
+    current_admin: str = Depends(get_current_admin)
+):
+    """
+    Upload image to Cloudinary and return the URL
+    """
+    try:
+        # Validate file type
+        allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"]
+        if file.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid file type. Allowed types: {', '.join(allowed_types)}"
+            )
+        
+        # Validate file size (max 10MB)
+        contents = await file.read()
+        if len(contents) > 10 * 1024 * 1024:  # 10MB
+            raise HTTPException(status_code=400, detail="File size exceeds 10MB limit")
+        
+        # Upload to Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            contents,
+            folder="softgemz/portfolio",
+            resource_type="image",
+            transformation=[
+                {'width': 1200, 'height': 800, 'crop': 'limit'},
+                {'quality': 'auto:good'}
+            ]
+        )
+        
+        image_url = upload_result.get('secure_url')
+        
+        logger.info(f"Admin {current_admin} uploaded image: {image_url}")
+        
+        return {
+            "success": True,
+            "url": image_url,
+            "public_id": upload_result.get('public_id'),
+            "message": "Image uploaded successfully"
+        }
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error uploading image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+# ---------------------
 # Admin Contact Management Routes
 # ---------------------
 @api_router.get("/admin/contacts", response_model=List[ContactSubmission])
