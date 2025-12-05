@@ -179,6 +179,54 @@ const AdminPortfolio = () => {
     });
   };
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/admin/upload-image`,
+        formDataUpload,
+        {
+          headers: {
+            ...getAuthHeaders(),
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setFormData({
+          ...formData,
+          image: response.data.url
+        });
+        toast.success('Image uploaded successfully!');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
