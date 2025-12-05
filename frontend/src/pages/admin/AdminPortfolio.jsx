@@ -439,14 +439,62 @@ const AdminPortfolio = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Project Image</label>
+                
+                {/* Image Preview */}
+                {formData.image && (
+                  <div className="mb-3">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                    />
+                  </div>
+                )}
+                
+                {/* Upload Button */}
+                <div className="flex space-x-2 mb-2">
+                  <label className="flex-1 cursor-pointer">
+                    <div className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                      {uploading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5" />
+                          <span>Upload Image from Computer</span>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading || submitting}
+                    />
+                  </label>
+                </div>
+                
+                {/* Or divider */}
+                <div className="flex items-center my-3">
+                  <div className="flex-1 border-t border-gray-300"></div>
+                  <span className="px-3 text-sm text-gray-500">or paste URL</span>
+                  <div className="flex-1 border-t border-gray-300"></div>
+                </div>
+                
+                {/* Manual URL Input */}
                 <input
                   type="url"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://..."
+                  placeholder="https://example.com/image.jpg"
+                  disabled={uploading}
                 />
+                <p className="text-xs text-gray-500 mt-1">Upload an image or paste an image URL</p>
               </div>
 
               <div>
