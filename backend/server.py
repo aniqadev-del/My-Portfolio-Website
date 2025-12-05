@@ -22,6 +22,9 @@ from fastapi.responses import StreamingResponse
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import cloudinary
+import cloudinary.uploader
+from fastapi import UploadFile, File
 
 # ---------------------
 # Load environment variables
