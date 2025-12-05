@@ -75,6 +75,13 @@ SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL", SMTP_USER)
 SMTP_FROM_NAME = os.environ.get("SMTP_FROM_NAME", "SoftGemZ Team")
 
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", ""),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", ""),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "")
+)
+
 # ---------------------
 # Models
 # ---------------------
