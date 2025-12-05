@@ -36,6 +36,7 @@ const AdminPortfolio = () => {
   });
   const [techInput, setTechInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
