@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageStretchModal from '../../components/ImageStretchModal';
+import ThemeSwitcher from '../../components/ThemeSwitcher';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -273,13 +274,16 @@ const AdminPortfolio = () => {
                 <p className="text-sm text-gray-600">Manage your portfolio projects</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Logout</span>
-            </button>
+            <div className="flex items-center space-x-3">
+              <ThemeSwitcher />
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>

@@ -1,0 +1,121 @@
+/* ===== Admin theme variables (admin-only, scoped to [data-admin-theme]) ===== */
+[data-admin-theme="light"] {
+  --page-bg: #f9fafb;
+  --surface: #ffffff;
+  --chip-bg: #f3f4f6;
+  --hover-bg: #f3f4f6;
+  --text: #111827;
+  --text-muted: #4b5563;
+  --text-subtle: #6b7280;
+  --border: #e5e7eb;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft-bg: #eff6ff;
+  --accent-soft-bg2: #dbeafe;
+  --accent-soft-text: #1e40af;
+  --input-bg: #ffffff;
+}
+
+[data-admin-theme="dark"] {
+  --page-bg: #0b1120;
+  --surface: #111827;
+  --chip-bg: #1f2937;
+  --hover-bg: #1f2937;
+  --text: #f1f5f9;
+  --text-muted: #cbd5e1;
+  --text-subtle: #94a3b8;
+  --border: #334155;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-soft-bg: #172554;
+  --accent-soft-bg2: #1e3a8a;
+  --accent-soft-text: #bfdbfe;
+  --input-bg: #0b1120;
+}
+
+[data-admin-theme="cyber"] {
+  --page-bg: #120e1f;
+  --surface: #1c1530;
+  --chip-bg: #2a2140;
+  --hover-bg: #2a2140;
+  --text: #f5f3ff;
+  --text-muted: #d6c7f5;
+  --text-subtle: #a995cf;
+  --border: #3b2f5c;
+  --accent: #a855f7;
+  --accent-hover: #c084fc;
+  --accent-soft-bg: #2e1f47;
+  --accent-soft-bg2: #3b2a5c;
+  --accent-soft-text: #e9d5ff;
+  --input-bg: #161024;
+}
+
+[data-admin-theme="mint"] {
+  --page-bg: #effbf6;
+  --surface: #ffffff;
+  --chip-bg: #d1fae5;
+  --hover-bg: #d1fae5;
+  --text: #064e3b;
+  --text-muted: #0f766e;
+  --text-subtle: #10b981;
+  --border: #a7f3d0;
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --accent-soft-bg: #d1fae5;
+  --accent-soft-bg2: #a7f3d0;
+  --accent-soft-text: #065f46;
+  --input-bg: #ffffff;
+}
+
+/* ===== Overrides applied to all admin themes ===== */
+[data-admin-theme] .bg-gray-50 { background-color: var(--page-bg); }
+[data-admin-theme] .bg-white { background-color: var(--surface); }
+[data-admin-theme] .bg-gray-100 { background-color: var(--chip-bg); }
+
+[data-admin-theme] .bg-blue-600 { background-color: var(--accent); }
+[data-admin-theme] .bg-blue-50 { background-color: var(--accent-soft-bg); }
+[data-admin-theme] .bg-blue-100 { background-color: var(--accent-soft-bg2); }
+[data-admin-theme] .bg-purple-50 { background-color: var(--chip-bg); }
+
+[data-admin-theme] .text-gray-900 { color: var(--text); }
+[data-admin-theme] .text-gray-700 { color: var(--text-muted); }
+[data-admin-theme] .text-gray-600 { color: var(--text-muted); }
+[data-admin-theme] .text-gray-500 { color: var(--text-subtle); }
+[data-admin-theme] .text-gray-400 { color: var(--text-subtle); }
+[data-admin-theme] .text-blue-600 { color: var(--accent); }
+[data-admin-theme] .text-blue-700 { color: var(--accent-hover); }
+[data-admin-theme] .text-blue-800 { color: var(--accent-soft-text); }
+
+[data-admin-theme] .border-gray-100,
+[data-admin-theme] .border-gray-200,
+[data-admin-theme] .border-gray-300 { border-color: var(--border); }
+[data-admin-theme] .border-b { border-bottom-color: var(--border); }
+[data-admin-theme] .border-t { border-top-color: var(--border); }
+[data-admin-theme] .border-blue-600 { border-color: var(--accent); }
+
+/* hover states */
+[data-admin-theme] .hover\:bg-gray-50:hover { background-color: var(--hover-bg); }
+[data-admin-theme] .hover\:bg-gray-100:hover { background-color: var(--hover-bg); }
+[data-admin-theme] .hover\:bg-blue-100:hover { background-color: var(--accent-soft-bg2); }
+[data-admin-theme] .hover\:bg-blue-700:hover { background-color: var(--accent-hover); }
+[data-admin-theme] .hover\:text-gray-900:hover { color: var(--text); }
+[data-admin-theme] .hover\:text-blue-700:hover { color: var(--accent-hover); }
+
+/* form fields */
+[data-admin-theme] input:not([type="range"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+[data-admin-theme] textarea,
+[data-admin-theme] select {
+  background-color: var(--input-bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+[data-admin-theme] ::placeholder { color: var(--text-subtle); opacity: 1; }
+
+/* smooth theme transitions */
+[data-admin-theme] .bg-white,
+[data-admin-theme] .bg-gray-50,
+[data-admin-theme] .bg-gray-100,
+[data-admin-theme] input,
+[data-admin-theme] textarea {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}

@@ -1,8 +1,10 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./admin-themes.css";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Toaster } from './components/ui/sonner';
 import { AdminProvider } from './contexts/AdminContext';
+import { AdminThemeProvider } from './contexts/AdminThemeContext';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import Home from './pages/Home';
@@ -21,12 +23,20 @@ function App() {
       <BrowserRouter>
         <AdminProvider>
           <Routes>
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/contacts" element={<AdminContacts />} />
-            <Route path="/admin/portfolio" element={<AdminPortfolio />} />
-            <Route path="/admin/services" element={<AdminServices />} />
+            {/* Admin Routes (wrapped with theme provider) */}
+            <Route
+              element={
+                <AdminThemeProvider>
+                  <Outlet />
+                </AdminThemeProvider>
+              }
+            >
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/contacts" element={<AdminContacts />} />
+              <Route path="/admin/portfolio" element={<AdminPortfolio />} />
+              <Route path="/admin/services" element={<AdminServices />} />
+            </Route>
             
             {/* Public Routes */}
             <Route path="/*" element={
