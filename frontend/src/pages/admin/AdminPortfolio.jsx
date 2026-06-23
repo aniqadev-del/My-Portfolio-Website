@@ -16,6 +16,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageCropModal from '../../components/ImageCropModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -39,6 +40,7 @@ const AdminPortfolio = () => {
   const [techInput, setTechInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -181,7 +183,7 @@ const AdminPortfolio = () => {
     });
   };
 
-  const handleImageUpload = async (event) => {
+  const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -198,10 +200,19 @@ const AdminPortfolio = () => {
       return;
     }
 
+    // Open crop/preview modal instead of uploading directly
+    const reader = new FileReader();
+    reader.onload = () => setCropImageSrc(reader.result);
+    reader.readAsDataURL(file);
+    // reset input so selecting the same file again re-triggers onChange
+    event.target.value = '';
+  };
+
+  const handleCropDone = async (blob) => {
     setUploading(true);
     try {
       const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
+      formDataUpload.append('file', blob, 'cropped.jpg');
 
       const response = await axios.post(
         `${BACKEND_URL}/api/admin/upload-image`,
@@ -215,11 +226,12 @@ const AdminPortfolio = () => {
       );
 
       if (response.data.success) {
-        setFormData({
-          ...formData,
+        setFormData((prev) => ({
+          ...prev,
           image: response.data.url
-        });
+        }));
         toast.success('Image uploaded successfully!');
+        setCropImageSrc(null);
       }
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -585,6 +597,16 @@ const AdminPortfolio = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Image Crop / Preview Modal */}
+      {cropImageSrc && (
+        <ImageCropModal
+          imageSrc={cropImageSrc}
+          aspect={16 / 9}
+          onCancel={() => setCropImageSrc(null)}
+          onCropDone={handleCropDone}
+        />
       )}
     </div>
   );
