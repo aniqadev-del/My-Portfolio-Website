@@ -16,7 +16,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
-import ImageCropModal from '../../components/ImageCropModal';
+import ImageStretchModal from '../../components/ImageStretchModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -599,11 +599,10 @@ const AdminPortfolio = () => {
         </div>
       )}
 
-      {/* Image Crop / Preview Modal */}
+      {/* Image Resize / Preview Modal */}
       {cropImageSrc && (
-        <ImageCropModal
+        <ImageStretchModal
           imageSrc={cropImageSrc}
-          aspect={16 / 9}
           onCancel={() => setCropImageSrc(null)}
           onCropDone={handleCropDone}
         />
