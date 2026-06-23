@@ -14,6 +14,7 @@ import {
   X
 } from 'lucide-react';
 import { toast } from 'sonner';
+import EmojiPicker from '../../components/EmojiPicker';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -356,13 +357,10 @@ const AdminServices = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Icon (emoji or text)</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-gray-700 mb-2">Icon (emoji)</label>
+                <EmojiPicker
                   value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="🤖 or ⚙️"
+                  onChange={(icon) => setFormData({ ...formData, icon })}
                 />
               </div>
 
