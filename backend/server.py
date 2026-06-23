@@ -402,8 +402,8 @@ async def upload_image(
             folder="softgemz/portfolio",
             resource_type="image",
             transformation=[
-                {'width': 1200, 'height': 800, 'crop': 'limit'},
-                {'quality': 'auto:good'}
+                {'width': 1200, 'height': 675, 'crop': 'pad', 'background': 'auto', 'gravity': 'center'},
+                {'quality': 'auto:good', 'fetch_format': 'auto'}
             ]
         )
         
