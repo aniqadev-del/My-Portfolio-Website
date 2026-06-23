@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { companyInfo } from '../data/mock';
+import { useSiteTheme } from '../contexts/SiteThemeContext';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, toggle } = useSiteTheme();
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -41,7 +43,15 @@ export const Header = () => {
           </nav>
 
           {/* CTA Button */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggle}
+              data-testid="site-theme-toggle"
+              aria-label="Toggle dark mode"
+              className="p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <Button 
               asChild
               className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105"
@@ -51,12 +61,22 @@ export const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center space-x-1">
+            <button
+              onClick={toggle}
+              data-testid="site-theme-toggle-mobile"
+              aria-label="Toggle dark mode"
+              className="p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
+              className="p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}

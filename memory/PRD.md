@@ -29,10 +29,11 @@ a statistics dashboard, and desktop image upload for portfolio projects.
 - GET /api/admin/stats
 
 ## Status / Changelog
-- 2026-06-23: RESOLVED outage. MongoDB Atlas cluster (cluster0.flhyyxv) was paused/unreachable
-  causing dashboard load failure + image-upload save failures. User provided new cluster
-  (cluster0.t2chdb7). Updated MONGO_URL, re-ran migration (5 portfolio, 4 services restored).
-  Verified: dashboard stats, public portfolio/services, Cloudinary upload all working.
+- 2026-06-23: Public website **Light/Dark mode** toggle added — visitor-controlled (sun/moon in header, desktop + mobile), persisted in browser (`siteTheme` localStorage). Implemented via `SiteThemeContext` + scoped `site-themes.css` (`data-site-theme="dark"`). Independent from admin theme. Tested e2e (toggle, persistence across pages, forms/cards/gradients).
+- 2026-06-23: Admin **theme switcher** (Light/Dark/Cyber Purple/Mint), admin-only, persisted (`adminTheme`). `AdminThemeContext` + `ThemeSwitcher` + `admin-themes.css`.
+- 2026-06-23: Services **emoji picker** (grouped dropdown + custom emoji) — `EmojiPicker.jsx`.
+- 2026-06-23: Portfolio image **free-stretch resize editor** (`ImageStretchModal.jsx`) + Cloudinary pad to 1280x720.
+- 2026-06-23: RESOLVED outage. MongoDB Atlas cluster was paused/unreachable.
 - Prior: Admin panel fully built — auth, dashboard, contacts CRUD+CSV+email, Portfolio/Services CRUD,
   Cloudinary upload for Portfolio.
 

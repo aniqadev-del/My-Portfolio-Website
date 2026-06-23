@@ -1,10 +1,12 @@
 import React from "react";
 import "./App.css";
 import "./admin-themes.css";
+import "./site-themes.css";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Toaster } from './components/ui/sonner';
 import { AdminProvider } from './contexts/AdminContext';
 import { AdminThemeProvider } from './contexts/AdminThemeContext';
+import { SiteThemeProvider } from './contexts/SiteThemeContext';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import Home from './pages/Home';
@@ -40,7 +42,7 @@ function App() {
             
             {/* Public Routes */}
             <Route path="/*" element={
-              <>
+              <SiteThemeProvider>
                 <Header />
                 <main>
                   <Routes>
@@ -51,7 +53,7 @@ function App() {
                   </Routes>
                 </main>
                 <Footer />
-              </>
+              </SiteThemeProvider>
             } />
           </Routes>
           <Toaster />

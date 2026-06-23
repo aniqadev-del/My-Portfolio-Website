@@ -1,0 +1,63 @@
+/* ===== Public website Dark Mode (visitor-controlled, scoped to [data-site-theme="dark"]) ===== */
+
+[data-site-theme="dark"] body { background-color: #0b1120; }
+
+/* surfaces */
+[data-site-theme="dark"] .bg-white { background-color: #111827; }
+[data-site-theme="dark"] .bg-white\/90 { background-color: rgba(17, 24, 39, 0.9); }
+[data-site-theme="dark"] .bg-gray-50 { background-color: #0b1120; }
+[data-site-theme="dark"] .bg-gray-100 { background-color: #1f2937; }
+[data-site-theme="dark"] .bg-blue-100 { background-color: #1e3a8a; }
+[data-site-theme="dark"] .bg-blue-200 { background-color: #1e40af; }
+
+/* text */
+[data-site-theme="dark"] .text-gray-900 { color: #f1f5f9; }
+[data-site-theme="dark"] .text-gray-700 { color: #cbd5e1; }
+[data-site-theme="dark"] .text-gray-600 { color: #cbd5e1; }
+[data-site-theme="dark"] .text-gray-500 { color: #94a3b8; }
+[data-site-theme="dark"] .text-gray-400 { color: #94a3b8; }
+[data-site-theme="dark"] .text-blue-600 { color: #60a5fa; }
+[data-site-theme="dark"] .text-blue-800 { color: #93c5fd; }
+
+/* borders */
+[data-site-theme="dark"] .border-gray-100,
+[data-site-theme="dark"] .border-gray-200,
+[data-site-theme="dark"] .border-gray-300 { border-color: #1f2937; }
+[data-site-theme="dark"] .border-t { border-top-color: #1f2937; }
+[data-site-theme="dark"] .border-b { border-bottom-color: #1f2937; }
+
+/* form fields */
+[data-site-theme="dark"] input:not([type="range"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+[data-site-theme="dark"] textarea,
+[data-site-theme="dark"] select {
+  background-color: #0b1120;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+[data-site-theme="dark"] ::placeholder { color: #94a3b8; opacity: 1; }
+
+/* decorative LIGHT gradients -> dark tones (vibrant CTA gradients left untouched) */
+[data-site-theme="dark"] .from-slate-50 { --tw-gradient-from: #0b1120 var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+[data-site-theme="dark"] .from-blue-50 { --tw-gradient-from: #0b1120 var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+[data-site-theme="dark"] .from-blue-100 { --tw-gradient-from: #0f172a var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+[data-site-theme="dark"] .from-blue-200 { --tw-gradient-from: #172554 var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+[data-site-theme="dark"] .from-cyan-100 { --tw-gradient-from: #0e2a32 var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+[data-site-theme="dark"] .from-cyan-200 { --tw-gradient-from: #0e2a32 var(--tw-gradient-from-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+
+[data-site-theme="dark"] .to-gray-50 { --tw-gradient-to: #0b1120 var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-blue-50 { --tw-gradient-to: #0b1120 var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-blue-200 { --tw-gradient-to: #172554 var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-blue-300 { --tw-gradient-to: #1e3a8a var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-cyan-100 { --tw-gradient-to: #0e2a32 var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-cyan-200 { --tw-gradient-to: #0e2a32 var(--tw-gradient-to-position); }
+[data-site-theme="dark"] .to-cyan-300 { --tw-gradient-to: #0e3744 var(--tw-gradient-to-position); }
+
+/* via stops for light decorative gradients */
+[data-site-theme="dark"] .via-white { --tw-gradient-to: rgb(17 24 39 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), #111827 var(--tw-gradient-via-position), var(--tw-gradient-to); }
+
+/* smooth transition */
+[data-site-theme="dark"] .bg-white,
+[data-site-theme="dark"] .bg-gray-50,
+[data-site-theme="dark"] .bg-gray-100,
+[data-site-theme="dark"] input,
+[data-site-theme="dark"] textarea { transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease; }
