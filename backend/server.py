@@ -770,7 +770,7 @@ app.include_router(api_router)
 cors_origins = os.environ.get('CORS_ORIGINS', '').split(',')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,      # e.g., ["https://softgemz.com"]
+    allow_origins=["*"],      # e.g., ["https://softgemz.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
